@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthPage from './pages/AuthPage';
-import Dashboard from './pages/Dashboard';
+import BuilderPage from './pages/BuilderPage';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -17,7 +17,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={user ? <Navigate to="/dashboard" /> : <AuthPage />} />
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/dashboard" element={<ProtectedRoute><BuilderPage /></ProtectedRoute>} />
     </Routes>
   );
 }
