@@ -26,4 +26,7 @@ app.use('/api/auth', authRoutes);
 const resumeRoutes = require('./routes/resume.routes');
 app.use('/api/resume', resumeRoutes);
 
+const historyRoutes = require('./routes/history.routes');
+app.use('/api/history', historyRoutes);
+
 module.exports = app;
