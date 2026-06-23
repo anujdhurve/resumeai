@@ -1,4 +1,5 @@
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${process.env.GEMINI_MODEL}:generateContent`;
+
 const buildPrompt = (resumeText, jdText, jobTitle) => {
   return `You are an expert resume writer who helps candidates write natural, specific, achievement-focused resumes — never generic corporate buzzwords.
 
