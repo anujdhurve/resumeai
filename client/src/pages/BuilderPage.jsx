@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { logout } from '../services/authService';
 import { tailorResume } from '../services/resumeService';
+import { exportDocx } from '../services/resumeService';
 import UploadDropzone from '../components/UploadDropzone';
 import JDInput from '../components/JDInput';
 import Toast from '../components/Toast';
@@ -32,6 +33,22 @@ export default function BuilderPage() {
   contentRef: resumeRef,
   documentTitle: `${jobTitle ? jobTitle.replace(/\s+/g, '-').toLowerCase() : 'tailored'}-resume`,
   });
+
+  const handleDownloadDocx = async () => {
+  try {
+    const blob = await exportDocx(tailoredText);
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${jobTitle ? jobTitle.replace(/\s+/g, '-').toLowerCase() : 'tailored'}-resume.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    setToast({ message: 'Failed to export DOCX. Try again.', type: 'error' });
+  }
+};
 
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
@@ -135,16 +152,28 @@ export default function BuilderPage() {
 
         {tailoredText && (
   <div className="mt-8">
-    <div className="flex items-center justify-between mb-3">
-      <h3 className="font-bold text-lg">Your tailored resume</h3>
-      <button
-        onClick={handlePrint}
-        className="bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-700 transition"
-      >
-        ⬇ Download PDF
-      </button>
-    </div>
+    <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+  <h3 className="font-bold text-lg">Your tailored resume</h3>
+  <div className="flex gap-2">
+    <button
+      onClick={handlePrint}
+      className="bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-700 transition"
+    >
+      ⬇ PDF
+    </button>
+    <button
+  onClick={handleDownloadDocx}
+  className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition"
+  title="DOCX export uses a clean, universal format regardless of selected template"
+>
+  ⬇ DOCX
+</button>
+  </div>
+</div>
     <TemplatePicker selected={template} onSelect={setTemplate} />
+    <p className="text-xs text-gray-400 mb-3">
+  Note: DOCX export uses a clean universal format; PDF export matches your selected template above.
+</p>
     <div className="overflow-x-auto">
   <div ref={resumeRef} id="resume-print-area" className="bg-white shadow-lg rounded p-6 sm:p-10 max-w-2xl min-w-[340px]">
     {renderTemplate(parseResume(tailoredText))}

@@ -3,6 +3,8 @@ const TailoredResume = require('../models/TailoredResume');
 const { tailorResume: tailorWithGemini } = require('../services/geminiService');
 const { extractText } = require('../services/parserService');
 const { uploadFile } = require('../services/cloudinaryService');
+const { parseResume } = require('../utils/parseResume');
+const { generateDocxBuffer } = require('../services/docxService');
 
 // @POST /api/resume/upload
 const uploadResume = async (req, res) => {
@@ -100,4 +102,22 @@ const tailorResume = async (req, res) => {
   }
 };
 
-module.exports = { uploadResume, listResumes, deleteResume, tailorResume  };
+// @POST /api/resume/export-docx
+const exportDocx = async (req, res) => {
+  try {
+    const { tailoredText } = req.body;
+    if (!tailoredText)
+      return res.status(400).json({ message: 'tailoredText is required' });
+
+    const data = parseResume(tailoredText);
+    const buffer = await generateDocxBuffer(data);
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.setHeader('Content-Disposition', 'attachment; filename="tailored-resume.docx"');
+    res.send(buffer);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { uploadResume, listResumes, deleteResume, tailorResume, exportDocx };

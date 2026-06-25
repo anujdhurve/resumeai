@@ -24,3 +24,10 @@ export const listResumes = async () => {
   const { data } = await api.get('/resume/list');
   return data.resumes;
 };
+
+export const exportDocx = async (tailoredText) => {
+  const response = await api.post('/resume/export-docx', { tailoredText }, {
+    responseType: 'blob',
+  });
+  return response.data;
+};
