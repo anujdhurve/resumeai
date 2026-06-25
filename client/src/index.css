@@ -24,7 +24,7 @@ body {
     box-shadow: none !important;
     border-radius: 0 !important;
     min-height: auto !important;
-    transform: scale(1.15);
+    transform: scale(1.50);
     transform-origin: top left;
   }
   @page {
