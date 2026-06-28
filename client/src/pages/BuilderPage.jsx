@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +8,8 @@ import { exportDocx } from '../services/resumeService';
 import UploadDropzone from '../components/UploadDropzone';
 import JDInput from '../components/JDInput';
 import Toast from '../components/Toast';
+import { useSearchParams } from 'react-router-dom';
+import { getHistoryItem } from '../services/resumeService';
 
 import { parseResume } from '../utils/parseResume';
 import ClassicTemplate from '../components/templates/ClassicTemplate';
@@ -26,6 +28,7 @@ export default function BuilderPage() {
   const [error, setError] = useState('');
   const [template, setTemplate] = useState('classic');
   const [toast, setToast] = useState(null);
+  const [searchParams] = useSearchParams();
 
   const resumeRef = useRef();
 
@@ -33,6 +36,25 @@ export default function BuilderPage() {
   contentRef: resumeRef,
   documentTitle: `${jobTitle ? jobTitle.replace(/\s+/g, '-').toLowerCase() : 'tailored'}-resume`,
   });
+
+  useEffect(() => {
+  const historyId = searchParams.get('history');
+  if (historyId) {
+    loadHistoryItem(historyId);
+  }
+}, [searchParams]);
+
+const loadHistoryItem = async (id) => {
+  try {
+    const item = await getHistoryItem(id);
+    setJobTitle(item.jobTitle);
+    setJdText(item.jdText);
+    setTailoredText(item.tailoredText);
+    setToast({ message: 'Loaded from history', type: 'success' });
+  } catch (err) {
+    setToast({ message: 'Failed to load this resume from history.', type: 'error' });
+  }
+};
 
   const handleDownloadDocx = async () => {
   try {
@@ -99,12 +121,15 @@ export default function BuilderPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
   <h1 className="text-base sm:text-lg font-bold whitespace-nowrap">resume<span className="text-red-600">.</span>ai</h1>
-  <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-    <span className="text-xs sm:text-sm text-gray-500 truncate hidden sm:inline">{user?.email}</span>
-    <button onClick={handleLogout} className="text-xs sm:text-sm border px-2 sm:px-3 py-1 rounded-md text-gray-600 whitespace-nowrap">
-      Log out
-    </button>
-  </div>
+<div className="flex items-center gap-2 sm:gap-4 min-w-0">
+  <button onClick={() => navigate('/history')} className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">
+    History
+  </button>
+  <span className="text-xs sm:text-sm text-gray-500 truncate hidden sm:inline">{user?.email}</span>
+  <button onClick={handleLogout} className="text-xs sm:text-sm border px-2 sm:px-3 py-1 rounded-md text-gray-600 whitespace-nowrap">
+    Log out
+  </button>
+</div>
 </header>
 
       <main className="max-w-2xl mx-auto p-4 sm:p-6">

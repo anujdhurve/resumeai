@@ -31,3 +31,18 @@ export const exportDocx = async (tailoredText) => {
   });
   return response.data;
 };
+
+
+export const getHistory = async () => {
+  const { data } = await api.get('/history');
+  return data.history;
+};
+
+export const getHistoryItem = async (id) => {
+  const { data } = await api.get(`/history/${id}`);
+  return data.item;
+};
+
+export const deleteHistoryItem = async (id) => {
+  await api.delete(`/history/${id}`);
+};
