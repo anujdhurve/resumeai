@@ -122,6 +122,9 @@ const loadHistoryItem = async (id) => {
       <header className="bg-white border-b px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
   <h1 className="text-base sm:text-lg font-bold whitespace-nowrap">resume<span className="text-red-600">.</span>ai</h1>
 <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+  <button onClick={() => navigate('/profile')} className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">
+    Profile
+  </button>
   <button onClick={() => navigate('/history')} className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap">
     History
   </button>
