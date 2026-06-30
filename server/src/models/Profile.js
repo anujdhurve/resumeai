@@ -7,6 +7,20 @@ const ProfileSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  displayName: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  headline: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  photo: {
+    type: String, // base64 data URL
+    default: null
+  },
   skills: [{
     type: String,
     trim: true

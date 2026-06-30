@@ -16,13 +16,20 @@ const getProfile = async (req, res) => {
 // @PUT /api/profile
 const updateProfile = async (req, res) => {
   try {
-    const { skills, projects } = req.body;
+    const { skills, projects, photo, displayName, headline } = req.body;
 
     const profile = await Profile.findOneAndUpdate(
-  { userId: req.user._id },
-  { skills: skills || [], projects: projects || [], updatedAt: Date.now() },
-  { returnDocument: 'after', upsert: true }
-);
+      { userId: req.user._id },
+      {
+        skills: skills || [],
+        projects: projects || [],
+        photo: photo ?? null,
+        displayName: displayName || '',
+        headline: headline || '',
+        updatedAt: Date.now()
+      },
+      { returnDocument: 'after', upsert: true }
+    );
 
     res.json({ profile });
   } catch (error) {
