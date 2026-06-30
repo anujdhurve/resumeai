@@ -10,14 +10,15 @@ export const uploadResume = async (file) => {
   return data; // { resumeId, extractedText, fileName }
 };
 
-export const tailorResume = async (resumeText, jdText, jobTitle, resumeId) => {
+export const tailorResume = async (resumeText, jdText, jobTitle, resumeId, mode) => {
   const { data } = await api.post('/resume/tailor', {
     resumeText,
     jdText,
     jobTitle,
     resumeId,
+    mode,
   });
-  return data; // { id, tailoredText }
+  return data;
 };
 
 export const listResumes = async () => {

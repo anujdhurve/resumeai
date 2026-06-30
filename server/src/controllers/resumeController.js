@@ -1,4 +1,5 @@
 const Resume = require('../models/Resume');
+const Profile = require('../models/Profile');
 const TailoredResume = require('../models/TailoredResume');
 const { tailorResume: tailorWithGemini } = require('../services/geminiService');
 const { extractText } = require('../services/parserService');
@@ -76,12 +77,20 @@ const deleteResume = async (req, res) => {
 // @POST /api/resume/tailor
 const tailorResume = async (req, res) => {
   try {
-    const { resumeText, jdText, jobTitle, resumeId } = req.body;
+    const { resumeText, jdText, jobTitle, resumeId, mode } = req.body;
 
     if (!resumeText || !jdText || !jobTitle)
       return res.status(400).json({ message: 'resumeText, jdText, and jobTitle are required' });
 
-    const tailoredText = await tailorWithGemini(resumeText, jdText, jobTitle);
+    // Fetch the user's saved profile (skills/projects) as a reference pool
+    const profile = await Profile.findOne({ userId: req.user._id });
+    const profileContext = profile
+      ? { skills: profile.skills || [], projects: profile.projects || [] }
+      : { skills: [], projects: [] };
+
+    const selectedMode = mode === 'aggressive' ? 'aggressive' : 'moderate';
+
+    const tailoredText = await tailorWithGemini(resumeText, jdText, jobTitle, profileContext, selectedMode);
 
     const saved = await TailoredResume.create({
       userId: req.user._id,

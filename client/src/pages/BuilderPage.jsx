@@ -29,6 +29,7 @@ export default function BuilderPage() {
   const [template, setTemplate] = useState('classic');
   const [toast, setToast] = useState(null);
   const [searchParams] = useSearchParams();
+  const [mode, setMode] = useState('moderate');
 
   const resumeRef = useRef();
 
@@ -97,7 +98,7 @@ const loadHistoryItem = async (id) => {
     setTailoredText('');
 
     try {
-      const result = await tailorResume(resumeText, jdText, jobTitle, resumeData?.resumeId);
+      const result = await tailorResume(resumeText, jdText, jobTitle, resumeData?.resumeId, mode);
       setTailoredText(result.tailoredText);
       setTailoredText(result.tailoredText);
   setToast({ message: 'Resume tailored successfully!', type: 'success' });
@@ -158,6 +159,35 @@ const loadHistoryItem = async (id) => {
         {resumeText && (
           <>
             <JDInput jobTitle={jobTitle} setJobTitle={setJobTitle} jdText={jdText} setJdText={setJdText} />
+
+<div className="mt-4 mb-2">
+  <label className="block text-xs font-semibold text-gray-500 mb-2">Tailoring Mode</label>
+  <div className="flex bg-gray-100 rounded-lg p-1 max-w-xs">
+    <button
+      type="button"
+      onClick={() => setMode('moderate')}
+      className={`flex-1 py-2 rounded-md text-sm font-medium transition ${
+        mode === 'moderate' ? 'bg-white shadow text-gray-900' : 'text-gray-500'
+      }`}
+    >
+      Moderate
+    </button>
+    <button
+      type="button"
+      onClick={() => setMode('aggressive')}
+      className={`flex-1 py-2 rounded-md text-sm font-medium transition ${
+        mode === 'aggressive' ? 'bg-white shadow text-gray-900' : 'text-gray-500'
+      }`}
+    >
+      Aggressive
+    </button>
+  </div>
+  <p className="text-xs text-gray-400 mt-2">
+    {mode === 'aggressive'
+      ? 'Removes anything not clearly relevant to this role.'
+      : 'Keeps most content, reordered to emphasize what matters most.'}
+  </p>
+</div>
 
             {error && <p className="text-red-600 text-sm mt-3">⚠ {error}</p>}
 
